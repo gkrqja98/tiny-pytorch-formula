@@ -9,6 +9,8 @@ from typing import Dict, List, Tuple, Optional, Union, Any
 import html
 
 from .formatters import format_tensor_as_markdown_table, tensor_to_html_table
+from torch_formula.utils.html_renderer.renderer import HTMLRenderer
+from torch_formula.utils.html_renderer.math_formatter import MathFormatter
 
 
 def format_conv2d_backward_as_markdown(comp_results: Dict[str, Any]) -> str:
@@ -328,9 +330,14 @@ def conv2d_backward_html(comp_results):
     """Generate HTML for Conv2d backward computation"""
     position = comp_results['position']
     
+    # Use MathFormatter for specialized gradient formulas
+    input_grad_formula = MathFormatter.format_input_gradient()
+    weight_grad_formula = MathFormatter.format_weight_gradient()
+    bias_grad_formula = MathFormatter.format_bias_gradient()
+    
     html = f"""
     <div class="backward-computation">
-    <h3>Backward Computation for Conv2d at Position: (batch={position[0]}, out_channel={position[1]}, y={position[2]}, x={position[3]})</h3>
+    <h3>Backward Computation for Conv2d at Position: batch = {position[0]}, out_channel = {position[1]}, y = {position[2]}, x = {position[3]}</h3>
     
     <h4>Gradient Output Value</h4>
     <p>{comp_results['grad_output_val']:.6f}</p>
@@ -349,9 +356,9 @@ def conv2d_backward_html(comp_results):
     
     for i in range(len(positions)):
         pos = positions[i]
-        formula = formulas[i]
+        formula = MathFormatter.format_tensor_element(formulas[i], display_mode=False)
         value = values[i]
-        html += f"<tr><td>({pos[0]}, {pos[1]}, {pos[2]})</td><td>\\({formula}\\)</td><td>{value:.6f}</td></tr>\n"
+        html += f"<tr><td>({pos[0]}, {pos[1]}, {pos[2]})</td><td>{formula}</td><td>{value:.6f}</td></tr>\n"
     
     html += """
     </table>
@@ -367,9 +374,9 @@ def conv2d_backward_html(comp_results):
     
     for i in range(len(positions)):
         pos = positions[i]
-        formula = formulas[i]
+        formula = MathFormatter.format_tensor_element(formulas[i], display_mode=False)
         value = values[i]
-        html += f"<tr><td>({pos[0]}, {pos[1]}, {pos[2]}, {pos[3]})</td><td>\\({formula}\\)</td><td>{value:.6f}</td></tr>\n"
+        html += f"<tr><td>({pos[0]}, {pos[1]}, {pos[2]}, {pos[3]})</td><td>{formula}</td><td>{value:.6f}</td></tr>\n"
     
     html += f"""
     </table>
@@ -379,14 +386,20 @@ def conv2d_backward_html(comp_results):
     
     <h3>General Gradient Formulas</h3>
     
-    <h4>Input Gradient Formula</h4>
-    <p>\\({comp_results['general_input_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>Input Gradient Formula</h4>
+        <div class="math-container">{input_grad_formula}</div>
+    </div>
     
-    <h4>Weight Gradient Formula</h4>
-    <p>\\({comp_results['general_weight_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>Weight Gradient Formula</h4>
+        <div class="math-container">{weight_grad_formula}</div>
+    </div>
     
-    <h4>Bias Gradient Formula</h4>
-    <p>\\({comp_results['general_bias_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>Bias Gradient Formula</h4>
+        <div class="math-container">{bias_grad_formula}</div>
+    </div>
     </div>
     """
     
@@ -398,9 +411,13 @@ def maxpool2d_backward_html(comp_results):
     position = comp_results['position']
     max_y, max_x = comp_results['max_position']
     
+    # Format general formula
+    general_formula_latex = r"\frac{\partial L}{\partial x_{i,j}} = \begin{cases} \frac{\partial L}{\partial y} & \text{if } (i,j) \text{ is the location of max value} \\ 0 & \text{otherwise} \end{cases}"
+    general_formula = f"$${general_formula_latex}$$"
+    
     html = f"""
     <div class="backward-computation">
-    <h3>Backward Computation for MaxPool2d at Position: (batch={position[0]}, channel={position[1]}, y={position[2]}, x={position[3]})</h3>
+    <h3>Backward Computation for MaxPool2d at Position: batch = {position[0]}, channel = {position[1]}, y = {position[2]}, x = {position[3]}</h3>
     
     <h4>Gradient Output Value</h4>
     <p>{comp_results['grad_output_val']:.6f}</p>
@@ -421,9 +438,9 @@ def maxpool2d_backward_html(comp_results):
     
     for i in range(len(positions)):
         pos = positions[i]
-        formula = formulas[i]
+        formula = MathFormatter.format_tensor_element(formulas[i], display_mode=False)
         value = values[i]
-        html += f"<tr><td>({pos[0]}, {pos[1]})</td><td>\\({formula}\\)</td><td>{value:.6f}</td></tr>\n"
+        html += f"<tr><td>({pos[0]}, {pos[1]})</td><td>{formula}</td><td>{value:.6f}</td></tr>\n"
     
     html += """
     </table>
@@ -436,8 +453,10 @@ def maxpool2d_backward_html(comp_results):
     html += tensor_to_html_table(comp_results['input_grad']['map'])
     
     html += f"""
-    <h3>General Gradient Formula</h3>
-    <p>\\({comp_results['general_input_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Gradient Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     </div>
     """
     
@@ -448,9 +467,14 @@ def avgpool2d_backward_html(comp_results):
     """Generate HTML for AvgPool2d backward computation"""
     position = comp_results['position']
     
+    # Format general formula
+    kernel_size = comp_results['kernel_size']
+    general_formula_latex = r"\frac{\partial L}{\partial x_{i,j}} = \frac{1}{" + f"{kernel_size}^2" + r"} \cdot \frac{\partial L}{\partial y} \quad \text{for all } (i,j) \text{ in the receptive field}"
+    general_formula = f"$${general_formula_latex}$$"
+    
     html = f"""
     <div class="backward-computation">
-    <h3>Backward Computation for AvgPool2d at Position: (batch={position[0]}, channel={position[1]}, y={position[2]}, x={position[3]})</h3>
+    <h3>Backward Computation for AvgPool2d at Position: batch = {position[0]}, channel = {position[1]}, y = {position[2]}, x = {position[3]}</h3>
     
     <h4>Gradient Output Value</h4>
     <p>{comp_results['grad_output_val']:.6f}</p>
@@ -469,9 +493,9 @@ def avgpool2d_backward_html(comp_results):
     
     for i in range(len(positions)):
         pos = positions[i]
-        formula = formulas[i]
+        formula = MathFormatter.format_tensor_element(formulas[i], display_mode=False)
         value = values[i]
-        html += f"<tr><td>({pos[0]}, {pos[1]})</td><td>\\({formula}\\)</td><td>{value:.6f}</td></tr>\n"
+        html += f"<tr><td>({pos[0]}, {pos[1]})</td><td>{formula}</td><td>{value:.6f}</td></tr>\n"
     
     html += """
     </table>
@@ -482,8 +506,10 @@ def avgpool2d_backward_html(comp_results):
     html += tensor_to_html_table(comp_results['input_grad']['map'])
     
     html += f"""
-    <h3>General Gradient Formula</h3>
-    <p>\\({comp_results['general_input_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Gradient Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     </div>
     """
     
@@ -494,9 +520,18 @@ def linear_backward_html(comp_results):
     """Generate HTML for Linear backward computation"""
     position = comp_results['position']
     
+    # Format general formulas
+    input_grad_formula_latex = r"\frac{\partial L}{\partial x_i} = \sum_{j} \frac{\partial L}{\partial y_j} \cdot w_{j,i}"
+    weight_grad_formula_latex = r"\frac{\partial L}{\partial w_{j,i}} = \frac{\partial L}{\partial y_j} \cdot x_i"
+    bias_grad_formula_latex = r"\frac{\partial L}{\partial b_j} = \frac{\partial L}{\partial y_j}"
+    
+    input_grad_formula = f"$${input_grad_formula_latex}$$"
+    weight_grad_formula = f"$${weight_grad_formula_latex}$$"
+    bias_grad_formula = f"$${bias_grad_formula_latex}$$"
+    
     html = f"""
     <div class="backward-computation">
-    <h3>Backward Computation for Linear at Position: (batch={position[0]}, output_feature={position[1]})</h3>
+    <h3>Backward Computation for Linear at Position: batch = {position[0]}, output_feature = {position[1]}</h3>
     
     <h4>Gradient Output Value</h4>
     <p>{comp_results['grad_output_val']:.6f}</p>
@@ -518,9 +553,9 @@ def linear_backward_html(comp_results):
     
     for i in range(len(positions)):
         pos = positions[i]
-        formula = formulas[i]
+        formula = MathFormatter.format_tensor_element(formulas[i], display_mode=False)
         value = values[i]
-        html += f"<tr><td>{pos}</td><td>\\({formula}\\)</td><td>{value:.6f}</td></tr>\n"
+        html += f"<tr><td>{pos}</td><td>{formula}</td><td>{value:.6f}</td></tr>\n"
     
     html += """
     </table>
@@ -536,9 +571,9 @@ def linear_backward_html(comp_results):
     
     for i in range(len(positions)):
         pos = positions[i]
-        formula = formulas[i]
+        formula = MathFormatter.format_tensor_element(formulas[i], display_mode=False)
         value = values[i]
-        html += f"<tr><td>({pos[0]}, {pos[1]})</td><td>\\({formula}\\)</td><td>{value:.6f}</td></tr>\n"
+        html += f"<tr><td>({pos[0]}, {pos[1]})</td><td>{formula}</td><td>{value:.6f}</td></tr>\n"
     
     html += f"""
     </table>
@@ -548,14 +583,20 @@ def linear_backward_html(comp_results):
     
     <h3>General Gradient Formulas</h3>
     
-    <h4>Input Gradient Formula</h4>
-    <p>\\({comp_results['general_input_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>Input Gradient Formula</h4>
+        <div class="math-container">{input_grad_formula}</div>
+    </div>
     
-    <h4>Weight Gradient Formula</h4>
-    <p>\\({comp_results['general_weight_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>Weight Gradient Formula</h4>
+        <div class="math-container">{weight_grad_formula}</div>
+    </div>
     
-    <h4>Bias Gradient Formula</h4>
-    <p>\\({comp_results['general_bias_grad_formula']}\\)</p>
+    <div class="formula">
+        <h4>Bias Gradient Formula</h4>
+        <div class="math-container">{bias_grad_formula}</div>
+    </div>
     </div>
     """
     
@@ -567,6 +608,13 @@ def relu_backward_html(comp_results):
     position = comp_results['position']
     pos_str = ", ".join([str(p) for p in position])
     
+    # Format formula
+    formula = MathFormatter.format_tensor_element(comp_results['formula'], display_mode=True)
+    
+    # Format general formula
+    general_formula_latex = r"\frac{\partial L}{\partial x} = \begin{cases} \frac{\partial L}{\partial y} & \text{if } x > 0 \\ 0 & \text{if } x \leq 0 \end{cases}"
+    general_formula = f"$${general_formula_latex}$$"
+    
     html = f"""
     <div class="backward-computation">
     <h3>Backward Computation for ReLU at Position: ({pos_str})</h3>
@@ -577,12 +625,16 @@ def relu_backward_html(comp_results):
     <p>Gradient Output Value: {comp_results['grad_output_val']:.6f}</p>
     
     <h4>Gradient Computation</h4>
-    <p>Input Gradient = \\({comp_results['formula']}\\)</p>
+    <div class="formula">
+        <div class="math-container">Input Gradient = {formula}</div>
+    </div>
     <p>Computed Gradient Value: {comp_results['grad_input']:.6f}</p>
     <p>Explanation: {comp_results['explanation']}</p>
     
-    <h3>General Gradient Formula</h3>
-    <p>\\({comp_results['general_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Gradient Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     </div>
     """
     

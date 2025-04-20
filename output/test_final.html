@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PyTorch Formula Rendering Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- KaTeX for faster rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; border-bottom: 1px solid #3498db; padding-bottom: 5px; }
+        h3 { color: #2980b9; }
+        .forward-pass { border-left: 5px solid #2ecc71; padding-left: 15px; margin-bottom: 30px; }
+        .backward-pass { border-left: 5px solid #e74c3c; padding-left: 15px; margin-bottom: 30px; }
+        .formula { background-color: #f9f9f9; padding: 10px; border-radius: 5px; overflow-x: auto; margin: 15px 0; }
+        .math-container { overflow-x: auto; padding: 10px 0; }
+        table.tensor-table { border-collapse: collapse; margin: 10px 0; width: auto; }
+        .tensor-table th, .tensor-table td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+        .tensor-table th { background-color: #f2f2f2; }
+        /* Responsive design */
+        @media screen and (max-width: 768px) {
+            .tensor-table { width: 100%; overflow-x: auto; display: block; }
+            .math-container { overflow-x: auto; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <h1>PyTorch Formula 렌더링 테스트</h1>
+    
+    <div class="forward-pass">
+        <h2>Forward Pass</h2>
+        
+        <h3>컨볼루션 레이어</h3>
+        
+        <div class="formula">
+            <h4>일반식</h4>
+            <div class="math-container">
+                $$y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}$$
+            </div>
+        </div>
+        
+        <div class="formula">
+            <h4>값 대입식</h4>
+            <div class="math-container">
+                $$(0.2000 \times 0.3000) + (-0.0286 \times -0.5000) + (0.3429 \times 0.2000) + (-0.0286 \times 0.7000) + (0.3429 \times 0.4000) + (0.1143 \times -0.1000) + (0.3429 \times -0.3000) + (0.1143 \times 0.8000) + (0.4857 \times 0.5000) + 0.1000$$
+            </div>
+        </div>
+        
+        <h3>풀링 레이어</h3>
+        
+        <div class="formula">
+            <h4>Max Pooling</h4>
+            <div class="math-container">
+                $$y_{n,c,h_{out},w_{out}} = \max_{0 \leq i < k, 0 \leq j < k} x_{n,c,h_{in}+i,w_{in}+j}$$
+            </div>
+        </div>
+        
+        <div class="formula">
+            <h4>Average Pooling</h4>
+            <div class="math-container">
+                $$y_{n,c,h_{out},w_{out}} = \frac{1}{k^2} \sum_{i=0}^{k-1} \sum_{j=0}^{k-1} x_{n,c,h_{in}+i,w_{in}+j}$$
+            </div>
+        </div>
+        
+        <h3>선형 레이어</h3>
+        
+        <div class="formula">
+            <h4>일반식</h4>
+            <div class="math-container">
+                $$y_{n,j} = \sum_{i=0}^{in\_features-1} x_{n,i} \cdot w_{j,i} + b_j$$
+            </div>
+        </div>
+    </div>
+    
+    <div class="backward-pass">
+        <h2>Backward Pass</h2>
+        
+        <h3>컨볼루션 레이어 역전파</h3>
+        
+        <div class="formula">
+            <h4>입력 그래디언트 공식</h4>
+            <div class="math-container">
+                $$\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}$$
+            </div>
+        </div>
+        
+        <div class="formula">
+            <h4>가중치 그래디언트 공식</h4>
+            <div class="math-container">
+                $$\frac{\partial L}{\partial w_{c_{out},c_{in},k_h,k_w}} = \sum_{n} \sum_{h_{out},w_{out}} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot x_{n,c_{in},h_{in}+k_h,w_{in}+k_w}$$
+            </div>
+        </div>
+        
+        <div class="formula">
+            <h4>바이어스 그래디언트 공식</h4>
+            <div class="math-container">
+                $$\frac{\partial L}{\partial b_{c_{out}}} = \sum_{n} \sum_{h_{out},w_{out}} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}}$$
+            </div>
+        </div>
+        
+        <h3>풀링 레이어 역전파</h3>
+        
+        <div class="formula">
+            <h4>Max Pooling 역전파</h4>
+            <div class="math-container">
+                $$\frac{\partial L}{\partial x_{i,j}} = \begin{cases} \frac{\partial L}{\partial y} & \text{if } (i,j) \text{ is the location of max value} \\ 0 & \text{otherwise} \end{cases}$$
+            </div>
+        </div>
+        
+        <div class="formula">
+            <h4>Average Pooling 역전파</h4>
+            <div class="math-container">
+                $$\frac{\partial L}{\partial x_{i,j}} = \frac{1}{k^2} \cdot \frac{\partial L}{\partial y} \quad \text{for all } (i,j) \text{ in the receptive field}$$
+            </div>
+        </div>
+        
+        <h3>그래디언트 계산 예제</h3>
+        
+        <table class="tensor-table">
+            <tr><th>Position (y, x, c)</th><th>Formula</th><th>Gradient Value</th></tr>
+            <tr><td>(0, 0, 0)</td><td>$(-0.0014 \times 0.3000)$</td><td>-0.000427</td></tr>
+            <tr><td>(0, 1, 0)</td><td>$(-0.0014 \times -0.5000)$</td><td>0.000712</td></tr>
+            <tr><td>(0, 2, 0)</td><td>$(-0.0014 \times 0.2000)$</td><td>-0.000285</td></tr>
+            <tr><td>(1, 0, 0)</td><td>$(-0.0014 \times 0.7000)$</td><td>-0.000997</td></tr>
+            <tr><td>(1, 1, 0)</td><td>$(-0.0014 \times 0.4000)$</td><td>-0.000570</td></tr>
+            <tr><td>(1, 2, 0)</td><td>$(-0.0014 \times -0.1000)$</td><td>0.000142</td></tr>
+            <tr><td>(2, 0, 0)</td><td>$(-0.0014 \times -0.3000)$</td><td>0.000427</td></tr>
+            <tr><td>(2, 1, 0)</td><td>$(-0.0014 \times 0.8000)$</td><td>-0.001139</td></tr>
+            <tr><td>(2, 2, 0)</td><td>$(-0.0014 \times 0.5000)$</td><td>-0.000712</td></tr>
+        </table>
+    </div>
+</body>
+</html>

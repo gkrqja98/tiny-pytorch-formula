@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MathJax 3.x Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- MathJax 3.x configuration -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        pageReady: function() {
+          return MathJax.startup.defaultPageReady();
+        }
+      }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; border-bottom: 1px solid #3498db; padding-bottom: 5px; }
+        .formula { background-color: #f9f9f9; padding: 10px; border-radius: 5px; overflow-x: auto; margin: 15px 0; }
+        .math-container { overflow-x: auto; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>MathJax 3.x 테스트</h1>
+    
+    <h2>컨볼루션 레이어 수식</h2>
+    
+    <div class="formula">
+        <h3>일반식</h3>
+        <div class="math-container tex2jax_process">
+            \[y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\]
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>값 대입식</h3>
+        <div class="math-container tex2jax_process">
+            \[(1.0000 \times 0.3000) + (1.0000 \times -0.5000) + (1.0000 \times 0.2000) + (1.0000 \times 0.7000) + (1.0000 \times 0.4000) + (0.8429 \times -0.1000) + (1.0000 \times -0.3000) + (0.8429 \times 0.8000) + (0.9143 \times 0.5000) + 0.1000\]
+        </div>
+    </div>
+    
+    <h2>역전파 수식</h2>
+    
+    <div class="formula">
+        <h3>입력 그래디언트 공식</h3>
+        <div class="math-container tex2jax_process">
+            \[\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}\]
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>가중치 그래디언트 공식</h3>
+        <div class="math-container tex2jax_process">
+            \[\frac{\partial L}{\partial w_{c_{out},c_{in},k_h,k_w}} = \sum_{n} \sum_{h_{out},w_{out}} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot x_{n,c_{in},h_{in}+k_h,w_{in}+k_w}\]
+        </div>
+    </div>
+    
+    <h2>인라인 수식 테스트</h2>
+    
+    <p>
+        컨볼루션 연산의 결과값은 $y = \sum_{i=0}^{n} x_i \cdot w_i + b$ 으로 계산됩니다.
+        그래디언트 값은 $\frac{\partial L}{\partial w} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial w}$ 입니다.
+    </p>
+    
+    <script>
+    // Force MathJax to reprocess the page after everything is loaded
+    window.onload = function() {
+        if (typeof MathJax !== 'undefined' && MathJax.typeset) {
+            console.log("Running final MathJax typeset...");
+            MathJax.typeset();
+        }
+    };
+    </script>
+</body>
+</html>

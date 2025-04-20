@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KaTeX Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- KaTeX for faster rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; border-bottom: 1px solid #3498db; padding-bottom: 5px; }
+        .formula { background-color: #f9f9f9; padding: 10px; border-radius: 5px; overflow-x: auto; margin: 15px 0; }
+        .math-container { overflow-x: auto; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>KaTeX 렌더링 테스트</h1>
+    
+    <h2>컨볼루션 레이어 수식</h2>
+    
+    <div class="formula">
+        <h3>일반식</h3>
+        <div class="math-container">
+            $$y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}$$
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>값 대입식</h3>
+        <div class="math-container">
+            $$(1.0000 \times 0.3000) + (1.0000 \times -0.5000) + (1.0000 \times 0.2000) + (1.0000 \times 0.7000) + (1.0000 \times 0.4000) + (0.8429 \times -0.1000) + (1.0000 \times -0.3000) + (0.8429 \times 0.8000) + (0.9143 \times 0.5000) + 0.1000$$
+        </div>
+    </div>
+    
+    <h2>역전파 수식</h2>
+    
+    <div class="formula">
+        <h3>입력 그래디언트 공식</h3>
+        <div class="math-container">
+            $$\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}$$
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>가중치 그래디언트 공식</h3>
+        <div class="math-container">
+            $$\frac{\partial L}{\partial w_{c_{out},c_{in},k_h,k_w}} = \sum_{n} \sum_{h_{out},w_{out}} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot x_{n,c_{in},h_{in}+k_h,w_{in}+k_w}$$
+        </div>
+    </div>
+    
+    <h2>인라인 수식 테스트</h2>
+    
+    <p>
+        컨볼루션 연산의 결과값은 $y = \sum_{i=0}^{n} x_i \cdot w_i + b$ 으로 계산됩니다.
+        그래디언트 값은 $\frac{\partial L}{\partial w} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial w}$ 입니다.
+    </p>
+    
+    <h2>이미지에 있던 수식들 렌더링 테스트</h2>
+    
+    <div class="formula">
+        <h3>이미지 1 수식</h3>
+        <div class="math-container">
+            $$y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in},k_h,k_w} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}$$
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>이미지 2 수식</h3>
+        <div class="math-container">
+            $$y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}$$
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>이미지 3 값 대입식</h3>
+        <div class="math-container">
+            $$(0.2000 \times 0.3000 + -0.0286 \times -0.5000 + 0.3429 \times 0.2000 + -0.0286 \times 0.7000 + 0.3429 \times 0.4000 + 0.1143 \times -0.1000 + 0.3429 \times -0.3000 + 0.1143 \times 0.8000 + 0.4857 \times 0.5000 + 0.1000)$$
+        </div>
+    </div>
+    
+    <div class="formula">
+        <h3>이미지 5 입력 그래디언트 공식</h3>
+        <div class="math-container">
+            $$\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}$$
+        </div>
+    </div>
+</body>
+</html>

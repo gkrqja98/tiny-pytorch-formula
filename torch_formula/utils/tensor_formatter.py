@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple, Optional, Union, Any
 
+# Import from new implementation
+from .tensor_formatter.tensor_formatter import tensor_to_html_table, format_tensor_as_table, tensor_to_formatted_array
+
 class TensorFormatter:
     """Formats tensor data for presentation in tables and reports"""
     
@@ -130,6 +133,13 @@ class TensorFormatter:
             })
         
         return pd.DataFrame(rows)
+    
+    @staticmethod
+    def tensor_to_html_table(tensor, title="Tensor Values", max_rows=10, max_cols=10):
+        """
+        Convert a tensor to an HTML table (wrapper for new implementation)
+        """
+        return tensor_to_html_table(tensor, title, max_rows, max_cols)
     
     @staticmethod
     def value_substitution_example(module: torch.nn.Module, 

@@ -9,6 +9,9 @@ import pandas as pd
 from typing import Dict, List, Tuple, Optional, Union, Any
 import html
 
+# Import the KaTeX formatting helpers
+from torch_formula.utils.html_renderer.renderer import HTMLRenderer
+from torch_formula.utils.html_renderer.math_formatter import MathFormatter
 
 def format_tensor_as_markdown_table(tensor: Union[torch.Tensor, np.ndarray], name: str = "Tensor") -> str:
     """
@@ -323,8 +326,17 @@ def html_for_conv2d(comp_results):
     """Generate HTML for Conv2d computation"""
     pos = comp_results['position']
     
+    # Use MathFormatter for specialized formulas
+    if 'general_formula' in comp_results:
+        general_formula = MathFormatter.format_convolution_forward()
+    else:
+        general_formula = MathFormatter.format_convolution_simplified()
+    
+    # Format value substitution formula
+    value_substitution = MathFormatter.format_value_substitution(comp_results['value_substitution'])
+    
     html = f"""
-    <h3>Computing output at position: (batch={pos[0]}, out_channel={pos[1]}, y={pos[2]}, x={pos[3]})</h3>
+    <h3>Computing output at position: batch = {pos[0]}, out_channel = {pos[1]}, y = {pos[2]}, x = {pos[3]}</h3>
     
     <h4>Filter Weights (Shape: {comp_results['filter_weights'].shape})</h4>
     {tensor_to_html_table(comp_results['filter_weights'])}
@@ -332,11 +344,15 @@ def html_for_conv2d(comp_results):
     <h4>Input Receptive Field (Shape: {comp_results['receptive_field'].shape})</h4>
     {tensor_to_html_table(comp_results['receptive_field'])}
     
-    <h3>General Formula</h3>
-    <p>\\({comp_results['general_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     
-    <h3>Value Substitution</h3>
-    <p>\\({comp_results['value_substitution']}\\)</p>
+    <div class="formula">
+        <h4>Value Substitution</h4>
+        <div class="math-container">{value_substitution}</div>
+    </div>
     
     <h3>Computation Result</h3>
     <p>Calculated value: {comp_results['computed_result']:.6f}</p>
@@ -351,18 +367,29 @@ def html_for_maxpool2d(comp_results):
     pos = comp_results['position']
     max_y, max_x = comp_results['max_position']
     
+    # Format formulas
+    general_formula_latex = f"y_{{{pos[0]},{pos[1]},{pos[2]},{pos[3]}}} = \\max_{{i,j \\in \\text{{receptive field}}}} x_{{{pos[0]},{pos[1]},i,j}}"
+    general_formula = f"$${general_formula_latex}$$"
+    
+    # Format value substitution
+    value_substitution = MathFormatter.format_value_substitution(comp_results['value_substitution'])
+    
     html = f"""
-    <h3>Computing output at position: (batch={pos[0]}, channel={pos[1]}, y={pos[2]}, x={pos[3]})</h3>
+    <h3>Computing output at position: batch = {pos[0]}, channel = {pos[1]}, y = {pos[2]}, x = {pos[3]}</h3>
     
     <h4>Input Receptive Field (Shape: {comp_results['receptive_field'].shape})</h4>
     {tensor_to_html_table(comp_results['receptive_field'])}
     <p>Maximum value position in receptive field: ({max_y}, {max_x}) with value {comp_results['receptive_field'][max_y, max_x]:.4f}</p>
     
-    <h3>General Formula</h3>
-    <p>\\({comp_results['general_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     
-    <h3>Value Substitution</h3>
-    <p>\\({comp_results['value_substitution']}\\)</p>
+    <div class="formula">
+        <h4>Value Substitution</h4>
+        <div class="math-container">{value_substitution}</div>
+    </div>
     
     <h3>Computation Result</h3>
     <p>Calculated max value: {comp_results['computed_result']:.6f}</p>
@@ -376,18 +403,31 @@ def html_for_avgpool2d(comp_results):
     """Generate HTML for AvgPool2d computation"""
     pos = comp_results['position']
     
+    # Format formulas
+    kernel_size = comp_results['kernel_size']
+    size_text = f"{kernel_size} \\times {kernel_size}"
+    general_formula_latex = f"y_{{{pos[0]},{pos[1]},{pos[2]},{pos[3]}}} = \\frac{{1}}{{{size_text}}} \\sum_{{i=0}}^{{{kernel_size}-1}} \\sum_{{j=0}}^{{{kernel_size}-1}} x_{{{pos[0]},{pos[1]},{pos[2]}+i,{pos[3]}+j}}"
+    general_formula = f"$${general_formula_latex}$$"
+    
+    # Format value substitution
+    value_substitution = MathFormatter.format_value_substitution(comp_results['value_substitution'])
+    
     html = f"""
-    <h3>Computing output at position: (batch={pos[0]}, channel={pos[1]}, y={pos[2]}, x={pos[3]})</h3>
+    <h3>Computing output at position: batch = {pos[0]}, channel = {pos[1]}, y = {pos[2]}, x = {pos[3]}</h3>
     
     <h4>Input Receptive Field (Shape: {comp_results['receptive_field'].shape})</h4>
     {tensor_to_html_table(comp_results['receptive_field'])}
-    <p>Kernel size: {comp_results['kernel_size']}</p>
+    <p>Kernel size: {kernel_size}</p>
     
-    <h3>General Formula</h3>
-    <p>\\({comp_results['general_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     
-    <h3>Value Substitution</h3>
-    <p>\\({comp_results['value_substitution']}\\)</p>
+    <div class="formula">
+        <h4>Value Substitution</h4>
+        <div class="math-container">{value_substitution}</div>
+    </div>
     
     <h3>Computation Result</h3>
     <p>Calculated average value: {comp_results['computed_result']:.6f}</p>
@@ -401,8 +441,16 @@ def html_for_linear(comp_results):
     """Generate HTML for Linear computation"""
     pos = comp_results['position']
     
+    # Format formulas
+    in_features = comp_results['input_features'].shape[0]
+    general_formula_latex = f"y_{{{pos[0]},{pos[1]}}} = \\sum_{{i=0}}^{{{in_features}-1}} x_{{{pos[0]},i}} \\cdot w_{{{pos[1]},i}} + b_{{{pos[1]}}}"
+    general_formula = f"$${general_formula_latex}$$"
+    
+    # Format value substitution
+    value_substitution = MathFormatter.format_value_substitution(comp_results['value_substitution'])
+    
     html = f"""
-    <h3>Computing output at position: (batch={pos[0]}, output_feature={pos[1]})</h3>
+    <h3>Computing output at position: batch = {pos[0]}, output_feature = {pos[1]}</h3>
     
     <h4>Input Features (Shape: {comp_results['input_features'].shape})</h4>
     {tensor_to_html_table(comp_results['input_features'])}
@@ -410,11 +458,15 @@ def html_for_linear(comp_results):
     <h4>Weights for Output Feature (Shape: {comp_results['output_weights'].shape})</h4>
     {tensor_to_html_table(comp_results['output_weights'])}
     
-    <h3>General Formula</h3>
-    <p>\\({comp_results['general_formula']}\\)</p>
+    <div class="formula">
+        <h4>General Formula</h4>
+        <div class="math-container">{general_formula}</div>
+    </div>
     
-    <h3>Value Substitution</h3>
-    <p>\\({comp_results['value_substitution']}\\)</p>
+    <div class="formula">
+        <h4>Value Substitution</h4>
+        <div class="math-container">{value_substitution}</div>
+    </div>
     
     <h3>Computation Result</h3>
     <p>Calculated value: {comp_results['computed_result']:.6f}</p>
