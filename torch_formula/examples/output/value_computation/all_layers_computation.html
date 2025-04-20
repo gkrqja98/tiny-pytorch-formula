@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TinyCNN Model Analysis</title>
+<meta charset="UTF-8">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+.section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+.tensor-table { border-collapse: collapse; margin: 10px 0; width: auto; }
+.tensor-table th, .tensor-table td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+.tensor-table th { background-color: #f2f2f2; }
+</style>
+</head>
+<body>
+<h1>Detailed Analysis of All Layers in TinyCNN Model</h1>
+<div class='layer-summary'><h2>Layer: conv1 (Conv2d)</h2>
+
+<p><strong>Input Shape</strong>: torch.Size([1, 1, 8, 8])</p>
+<p><strong>Output Shape</strong>: torch.Size([1, 2, 8, 8])</p>
+
+<h3>Forward Pass</h3>
+
+<p><strong>General Formula</strong>: \(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in},k_h,k_w} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+
+
+    <div class="computation-details">
+    
+    <h3>Computing output at position: (batch=0, out_channel=0, y=1, x=1)</h3>
+    
+    <h4>Filter Weights (Shape: (1, 3, 3))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th><th>[2]</th></tr>
+<tr><th>[0]</th><td>0.3000</td><td>-0.5000</td><td>0.2000</td></tr>
+<tr><th>[1]</th><td>0.7000</td><td>0.4000</td><td>-0.1000</td></tr>
+<tr><th>[2]</th><td>-0.3000</td><td>0.8000</td><td>0.5000</td></tr>
+</table>
+
+    
+    <h4>Input Receptive Field (Shape: (3, 3, 1))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>0.2000</td></tr>
+<tr><th>[1]</th><td>-0.0286</td></tr>
+<tr><th>[2]</th><td>0.3429</td></tr>
+</table>
+<h5>Channel 1</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>-0.0286</td></tr>
+<tr><th>[1]</th><td>0.3429</td></tr>
+<tr><th>[2]</th><td>0.1143</td></tr>
+</table>
+<h5>Channel 2</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>0.3429</td></tr>
+<tr><th>[1]</th><td>0.1143</td></tr>
+<tr><th>[2]</th><td>0.4857</td></tr>
+</table>
+
+    
+    <h3>General Formula</h3>
+    <p>\(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+    
+    <h3>Value Substitution</h3>
+    <p>\((0.2000 \times 0.3000) + (-0.0286 \times -0.5000) + (0.3429 \times 0.2000) + (-0.0286 \times 0.7000) + (0.3429 \times 0.4000) + (0.1143 \times -0.1000) + (0.3429 \times -0.3000) + (0.1143 \times 0.8000) + (0.4857 \times 0.5000) + 0.1000\)</p>
+    
+    <h3>Computation Result</h3>
+    <p>Calculated value: 0.580000</p>
+    <p>Actual output value: 0.580000</p>
+    
+</div><h3>Backward Pass</h3>
+
+<p><strong>General Formula</strong>: \(\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out},k_h,k_w} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}\)</p>
+
+</div>
+
+<div class='layer-summary'><h2>Layer: pool1 (MaxPool2d)</h2>
+
+<p><strong>Input Shape</strong>: torch.Size([1, 2, 8, 8])</p>
+<p><strong>Output Shape</strong>: torch.Size([1, 2, 4, 4])</p>
+
+<h3>Forward Pass</h3>
+
+<p><strong>General Formula</strong>: \(y_{n,c,h_{out},w_{out}} = \max_{k_h,k_w} x_{n,c,h_{in}+k_h,w_{in}+k_w}\)</p>
+
+
+    <div class="computation-details">
+    
+    <h3>Computing output at position: (batch=0, channel=0, y=1, x=1)</h3>
+    
+    <h4>Input Receptive Field (Shape: (2, 2))</h4>
+    <table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>1.2314</td><td>1.4557</td></tr>
+<tr><th>[1]</th><td>1.7514</td><td>1.8643</td></tr>
+</table>
+    <p>Maximum value position in receptive field: (1, 1) with value 1.8643</p>
+    
+    <h3>General Formula</h3>
+    <p>\(y_{n,c,h_{out},w_{out}} = \max_{0 \leq i < k_h, 0 \leq j < k_w} x_{n,c,h_{in}+i,w_{in}+j}\)</p>
+    
+    <h3>Value Substitution</h3>
+    <p>\(\max(1.2314, 1.4557, 1.7514, 1.8643)\)</p>
+    
+    <h3>Computation Result</h3>
+    <p>Calculated max value: 1.864286</p>
+    <p>Actual output value: 1.864286</p>
+    
+</div><h3>Backward Pass</h3>
+
+<p><strong>General Formula</strong>: \(\frac{\partial L}{\partial x_{n,c,h_{in},w_{in}}} = \begin{cases} \frac{\partial L}{\partial y_{n,c,h_{out},w_{out}}} & \text{if } x_{n,c,h_{in},w_{in}} \text{ is max in pool} \\ 0 & \text{otherwise} \end{cases}\)</p>
+
+</div>
+
+<div class='layer-summary'><h2>Layer: conv2 (Conv2d)</h2>
+
+<p><strong>Input Shape</strong>: torch.Size([1, 2, 4, 4])</p>
+<p><strong>Output Shape</strong>: torch.Size([1, 4, 4, 4])</p>
+
+<h3>Forward Pass</h3>
+
+<p><strong>General Formula</strong>: \(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in},k_h,k_w} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+
+
+    <div class="computation-details">
+    
+    <h3>Computing output at position: (batch=0, out_channel=0, y=1, x=1)</h3>
+    
+    <h4>Filter Weights (Shape: (2, 3, 3))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th><th>[2]</th></tr>
+<tr><th>[0]</th><td>-0.0564</td><td>0.2138</td><td>-0.0643</td></tr>
+<tr><th>[1]</th><td>-0.1281</td><td>0.0525</td><td>0.1127</td></tr>
+<tr><th>[2]</th><td>0.0742</td><td>0.2271</td><td>-0.2033</td></tr>
+</table>
+<h5>Channel 1</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th><th>[2]</th></tr>
+<tr><th>[0]</th><td>-0.1295</td><td>-0.2122</td><td>0.0403</td></tr>
+<tr><th>[1]</th><td>0.0277</td><td>0.1636</td><td>-0.0793</td></tr>
+<tr><th>[2]</th><td>0.1491</td><td>0.2250</td><td>-0.1543</td></tr>
+</table>
+
+    
+    <h4>Input Receptive Field (Shape: (3, 3, 2))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>0.5800</td><td>0.3629</td></tr>
+<tr><th>[1]</th><td>1.3000</td><td>0.9214</td></tr>
+<tr><th>[2]</th><td>1.3686</td><td>0.9700</td></tr>
+</table>
+<h5>Channel 1</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>1.4657</td><td>0.9514</td></tr>
+<tr><th>[1]</th><td>1.8643</td><td>1.2243</td></tr>
+<tr><th>[2]</th><td>2.2229</td><td>1.3929</td></tr>
+</table>
+<h5>Channel 2</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>1.2486</td><td>0.9400</td></tr>
+<tr><th>[1]</th><td>2.0186</td><td>1.4814</td></tr>
+<tr><th>[2]</th><td>1.9471</td><td>1.3814</td></tr>
+</table>
+
+    
+    <h3>General Formula</h3>
+    <p>\(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+    
+    <h3>Value Substitution</h3>
+    <p>\((0.5800 \times -0.0564) + (1.3000 \times 0.2138) + (1.3686 \times -0.0643) + (1.4657 \times -0.1281) + (1.8643 \times 0.0525) + (2.2229 \times 0.1127) + (1.2486 \times 0.0742) + (2.0186 \times 0.2271) + (1.9471 \times -0.2033) + (0.3629 \times -0.1295) + (0.9214 \times -0.2122) + (0.9700 \times 0.0403) + (0.9514 \times 0.0277) + (1.2243 \times 0.1636) + (1.3929 \times -0.0793) + (0.9400 \times 0.1491) + (1.4814 \times 0.2250) + (1.3814 \times -0.1543) + 0.1739\)</p>
+    
+    <h3>Computation Result</h3>
+    <p>Calculated value: 0.820055</p>
+    <p>Actual output value: 0.820055</p>
+    
+</div><h3>Backward Pass</h3>
+
+<p><strong>General Formula</strong>: \(\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out},k_h,k_w} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}\)</p>
+
+</div>
+
+<div class='layer-summary'><h2>Layer: pool2 (AvgPool2d)</h2>
+
+<p><strong>Input Shape</strong>: torch.Size([1, 4, 4, 4])</p>
+<p><strong>Output Shape</strong>: torch.Size([1, 4, 2, 2])</p>
+
+<h3>Forward Pass</h3>
+
+<p><strong>General Formula</strong>: \(y_{n,c,h_{out},w_{out}} = \frac{1}{k_h \cdot k_w} \sum_{i=0}^{k_h-1} \sum_{j=0}^{k_w-1} x_{n,c,h_{in}+i,w_{in}+j}\)</p>
+
+
+    <div class="computation-details">
+    
+    <h3>Computing output at position: (batch=0, channel=0, y=1, x=1)</h3>
+    
+    <h4>Input Receptive Field (Shape: (2, 2))</h4>
+    <table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>0.7004</td><td>1.2385</td></tr>
+<tr><th>[1]</th><td>0.1651</td><td>0.0877</td></tr>
+</table>
+    <p>Kernel size: (2, 2)</p>
+    
+    <h3>General Formula</h3>
+    <p>\(y_{n,c,h_{out},w_{out}} = \frac{1}{k_h \cdot k_w} \sum_{i=0}^{k_h-1} \sum_{j=0}^{k_w-1} x_{n,c,h_{in}+i,w_{in}+j}\)</p>
+    
+    <h3>Value Substitution</h3>
+    <p>\(\frac1{2 \times 2} \times (0.7004 + 1.2385 + 0.1651 + 0.0877)\)</p>
+    
+    <h3>Computation Result</h3>
+    <p>Calculated average value: 0.547938</p>
+    <p>Actual output value: 0.547938</p>
+    
+</div><h3>Backward Pass</h3>
+
+<p><strong>General Formula</strong>: \(\frac{\partial L}{\partial x_{n,c,h_{in},w_{in}}} = \frac{1}{k_h \cdot k_w} \sum_{h_{out},w_{out}} \frac{\partial L}{\partial y_{n,c,h_{out},w_{out}}}\)</p>
+
+</div>
+
+<div class='layer-summary'><h2>Layer: conv3 (Conv2d)</h2>
+
+<p><strong>Input Shape</strong>: torch.Size([1, 4, 2, 2])</p>
+<p><strong>Output Shape</strong>: torch.Size([1, 2, 2, 2])</p>
+
+<h3>Forward Pass</h3>
+
+<p><strong>General Formula</strong>: \(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in},k_h,k_w} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+
+
+    <div class="computation-details">
+    
+    <h3>Computing output at position: (batch=0, out_channel=0, y=1, x=1)</h3>
+    
+    <h4>Filter Weights (Shape: (4, 1, 1))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>0.3082</td></tr>
+</table>
+<h5>Channel 1</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>-0.3845</td></tr>
+</table>
+<h5>Channel 2</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>-0.1656</td></tr>
+</table>
+<h5>Channel 3</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th></tr>
+<tr><th>[0]</th><td>-0.2766</td></tr>
+</table>
+
+    
+    <h4>Input Receptive Field (Shape: (1, 1, 4))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th><th>[2]</th><th>[3]</th></tr>
+<tr><th>[0]</th><td>0.5479</td><td>0.1062</td><td>0.4359</td><td>0.3585</td></tr>
+</table>
+
+    
+    <h3>General Formula</h3>
+    <p>\(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+    
+    <h3>Value Substitution</h3>
+    <p>\((0.5479 \times 0.3082) + (0.1062 \times -0.3845) + (0.4359 \times -0.1656) + (0.3585 \times -0.2766) + -0.4827\)</p>
+    
+    <h3>Computation Result</h3>
+    <p>Calculated value: -0.526049</p>
+    <p>Actual output value: -0.526049</p>
+    
+</div><h3>Backward Pass</h3>
+
+<p><strong>General Formula</strong>: \(\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out},k_h,k_w} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}\)</p>
+
+</div>
+
+<div class='layer-summary'><h2>Layer: conv_out (Conv2d)</h2>
+
+<p><strong>Input Shape</strong>: torch.Size([1, 2, 2, 2])</p>
+<p><strong>Output Shape</strong>: torch.Size([1, 2, 1, 1])</p>
+
+<h3>Forward Pass</h3>
+
+<p><strong>General Formula</strong>: \(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in},k_h,k_w} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+
+
+    <div class="computation-details">
+    
+    <h3>Computing output at position: (batch=0, out_channel=0, y=0, x=0)</h3>
+    
+    <h4>Filter Weights (Shape: (2, 2, 2))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>0.2235</td><td>-0.3527</td></tr>
+<tr><th>[1]</th><td>0.1200</td><td>-0.2583</td></tr>
+</table>
+<h5>Channel 1</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>0.0408</td><td>-0.2911</td></tr>
+<tr><th>[1]</th><td>0.3003</td><td>-0.0986</td></tr>
+</table>
+
+    
+    <h4>Input Receptive Field (Shape: (2, 2, 2))</h4>
+    <h5>Channel 0</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>0.0000</td><td>0.4418</td></tr>
+<tr><th>[1]</th><td>0.0000</td><td>0.6091</td></tr>
+</table>
+<h5>Channel 1</h5>
+<table class='tensor-table'>
+<tr><th></th><th>[0]</th><th>[1]</th></tr>
+<tr><th>[0]</th><td>0.0000</td><td>0.6356</td></tr>
+<tr><th>[1]</th><td>0.0000</td><td>0.6736</td></tr>
+</table>
+
+    
+    <h3>General Formula</h3>
+    <p>\(y_{n,c_{out},h_{out},w_{out}} = \sum_{c_{in}} \sum_{k_h=0}^{K_h-1} \sum_{k_w=0}^{K_w-1} x_{n,c_{in},h_{in}+k_h,w_{in}+k_w} \cdot w_{c_{out},c_{in},k_h,k_w} + b_{c_{out}}\)</p>
+    
+    <h3>Value Substitution</h3>
+    <p>\((0.0000 \times 0.2235) + (0.0000 \times -0.3527) + (0.0000 \times 0.1200) + (0.0000 \times -0.2583) + (0.4418 \times 0.0408) + (0.6091 \times -0.2911) + (0.6356 \times 0.3003) + (0.6736 \times -0.0986) + -0.0094\)</p>
+    
+    <h3>Computation Result</h3>
+    <p>Calculated value: -0.044280</p>
+    <p>Actual output value: -0.044280</p>
+    
+</div><h3>Backward Pass</h3>
+
+<p><strong>General Formula</strong>: \(\frac{\partial L}{\partial x_{n,c_{in},h_{in},w_{in}}} = \sum_{c_{out},k_h,k_w} \frac{\partial L}{\partial y_{n,c_{out},h_{out},w_{out}}} \cdot w_{c_{out},c_{in},k_h,k_w}\)</p>
+
+</div></body>
+</html>
